@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: filipp.turbanov@gmail.com
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: email
+                  value: "user1@example.com"
+              - column:
+                  name: hashed_password
+                  value: "$2a$10$1jVNvlgJH.8TKFfade00O.NEzGG1CThexhFPig9c7kH8jvy6NEFTu"
+              - column:
+                  name: created_at_ms
+                  value: 1703071498722
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: email
+                  value: "user2@example.com"
+              - column:
+                  name: hashed_password
+                  value: "$2a$10$4ivUT.gpKFMkn5nOOlOskOnhRz32RqNsOU4bdC.ruXPeBtdSr/QrC"
+              - column:
+                  name: created_at_ms
+                  value: 1703071498723
