@@ -11,6 +11,8 @@ import org.philipturbanovtz.exceptions.measurement.SaveMeasurementException;
 import org.philipturbanovtz.modules.measurement.MeasurementsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,13 @@ public class MeasurementServiceImpl implements MeasurementsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<MeasurementsRsDto> getHistoryForUser(long userId, Pageable pageable, Long dateFrom, Long dateTo) {
+        Page<Measurement> result = repository.getMeasurementsHistoryForUser(dateFrom, dateTo, userId, pageable);
+        return result.map(this::convertFromEntity);
+    }
+
+    @Override
     @Transactional
     public void saveForUser(User user, SaveMeasurementsRqDto data) throws InvalidMeasurementDataException, SaveMeasurementException {
         logger.debug("Going to save measurements for user " + user.getId());
@@ -57,10 +66,11 @@ public class MeasurementServiceImpl implements MeasurementsService {
         logger.info("Measurements for user " + user.getId() + " saved successfully!");
     }
 
-    private SaveMeasurementsRqDto validateMeasurementsDataToSaveThenGetNormalized(
-        SaveMeasurementsRqDto data,
-        long userId
-    ) throws InvalidMeasurementDataException {
+    private MeasurementsRsDto convertFromEntity(Measurement measurement) {
+        return new MeasurementsRsDto(measurement);
+    }
+
+    private SaveMeasurementsRqDto validateMeasurementsDataToSaveThenGetNormalized(SaveMeasurementsRqDto data, long userId) throws InvalidMeasurementDataException {
         logger.debug("Going to validate measurements data before saving");
 
         if (data == null) {
@@ -80,27 +90,15 @@ public class MeasurementServiceImpl implements MeasurementsService {
         }
 
         if (normalizedData.getGasInCubicMeters() < currentMeasurement.getGasInCubicMeters()) {
-            throwInvalidMeasurementDataException(
-                currentMeasurement.getGasInCubicMeters(),
-                normalizedData.getGasInCubicMeters(),
-                "gas"
-            );
+            throwInvalidMeasurementDataException(currentMeasurement.getGasInCubicMeters(), normalizedData.getGasInCubicMeters(), "gas");
         }
 
         if (normalizedData.getHotWaterInCubicMeters() < currentMeasurement.getHotWaterInCubicMeters()) {
-            throwInvalidMeasurementDataException(
-                currentMeasurement.getHotWaterInCubicMeters(),
-                normalizedData.getHotWaterInCubicMeters(),
-                "hot water"
-            );
+            throwInvalidMeasurementDataException(currentMeasurement.getHotWaterInCubicMeters(), normalizedData.getHotWaterInCubicMeters(), "hot water");
         }
 
         if (normalizedData.getColdWaterInCubicMeters() < currentMeasurement.getColdWaterInCubicMeters()) {
-            throwInvalidMeasurementDataException(
-                currentMeasurement.getColdWaterInCubicMeters(),
-                normalizedData.getColdWaterInCubicMeters(),
-                "cold water"
-            );
+            throwInvalidMeasurementDataException(currentMeasurement.getColdWaterInCubicMeters(), normalizedData.getColdWaterInCubicMeters(), "cold water");
         }
 
         logger.debug("Measurements data validated successfully");
@@ -108,9 +106,6 @@ public class MeasurementServiceImpl implements MeasurementsService {
     }
 
     private void throwInvalidMeasurementDataException(Double prevData, Double newData, String measurementName) throws InvalidMeasurementDataException {
-        throw new InvalidMeasurementDataException(
-            "Specified measurement for " + measurementName + " is " + newData + " cubic meters, " +
-                "which is less than the previous measurement: " + prevData + "!"
-        );
+        throw new InvalidMeasurementDataException("Specified measurement for " + measurementName + " is " + newData + " cubic meters, " + "which is less than the previous measurement: " + prevData + "!");
     }
 }

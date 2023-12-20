@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: filipp.turbanov@gmail.com
+      changes:
+        - createIndex:
+            tableName: measurements
+            indexName: created_at_ms_idx
+            columns:
+              - column:
+                  name: created_at_ms
+                  descending: true
