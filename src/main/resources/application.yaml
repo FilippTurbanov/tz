@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    url: jdbc:hsqldb:hsql://localhost/${SPRING_DATASOURCE_DBNAME}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    type:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: true
+    change-log: classpath:liquibase/db.changelog/db.changelog-master.yaml
+    drop-first: false
+    default-schema: public
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+  paths-to-exclude: /swagger-resources/**
