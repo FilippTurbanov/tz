@@ -47,23 +47,25 @@ public class MeasurementServiceImpl implements MeasurementsService {
 
     @Override
     @Transactional
-    public void saveForUser(User user, SaveMeasurementsRqDto data) throws InvalidMeasurementDataException, SaveMeasurementException {
-        logger.debug("Going to save measurements for user " + user.getId());
+    public void saveForUser(long userId, SaveMeasurementsRqDto data) throws InvalidMeasurementDataException, SaveMeasurementException {
+        logger.debug("Going to save measurements for user " + userId);
         logger.trace("Incoming measurements: " + data.toString());
-        SaveMeasurementsRqDto normalizedMeasurements = validateMeasurementsDataToSaveThenGetNormalized(data, user.getId());
+        SaveMeasurementsRqDto normalizedMeasurements = validateMeasurementsDataToSaveThenGetNormalized(data, userId);
         logger.trace("Normalized measurements: " + normalizedMeasurements.toString());
 
         try {
+            User user = new User();
+            user.setId(userId);
             Measurement dataToSave = new Measurement(normalizedMeasurements, user);
             logger.trace("Data to save: " + dataToSave);
             repository.save(dataToSave);
         } catch (Throwable e) {
-            String errMsg = "Error while saving measurements for user " + user.getId() + "!";
+            String errMsg = "Error while saving measurements for user " + userId + "!";
             logger.error(errMsg, e);
             throw new SaveMeasurementException(errMsg);
         }
 
-        logger.info("Measurements for user " + user.getId() + " saved successfully!");
+        logger.info("Measurements for user " + userId + " saved successfully!");
     }
 
     private MeasurementsRsDto convertFromEntity(Measurement measurement) {

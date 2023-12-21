@@ -14,7 +14,7 @@ databaseChangeLog:
                   value: "user1@example.com"
               - column:
                   name: hashed_password
-                  value: "$2a$10$1jVNvlgJH.8TKFfade00O.NEzGG1CThexhFPig9c7kH8jvy6NEFTu"
+                  value: "$2a$10$4BAarM3Jsp/9TjicAcBmFOroygEkToFGJ9Jvqn/IuG64/3/NKJXQa"
               - column:
                   name: created_at_ms
                   value: 1703071498722
@@ -29,7 +29,7 @@ databaseChangeLog:
                   value: "user2@example.com"
               - column:
                   name: hashed_password
-                  value: "$2a$10$4ivUT.gpKFMkn5nOOlOskOnhRz32RqNsOU4bdC.ruXPeBtdSr/QrC"
+                  value: "$2a$10$hJgXtC2Mgf2ePqnILYbVmupWRkjRLNdvfCVEQZL7eDbe.PVkDBjcS"
               - column:
                   name: created_at_ms
                   value: 1703071498723

@@ -6,7 +6,11 @@ public enum ResponseStatusCodeEnum {
     MEASUREMENT_ERROR(100),
     INVALID_MEASUREMENT_DATA_ERROR(101),
     SAVE_MEASUREMENT_ERROR(102),
-    MEASUREMENT_NOT_FOUND_ERROR(103);
+    MEASUREMENT_NOT_FOUND_ERROR(103),
+    USER_ERROR(200),
+    USER_NOT_FOUND_ERROR(201),
+    AUTH_ERROR(400),
+    INVALID_CREDENTIALS_ERROR(401);
     private final int code;
 
     ResponseStatusCodeEnum(int code) {
