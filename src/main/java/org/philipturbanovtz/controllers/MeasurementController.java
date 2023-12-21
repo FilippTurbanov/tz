@@ -7,12 +7,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.security.Principal;
 import javax.validation.Valid;
 import org.philipturbanovtz.common.HttpHelper;
-import org.philipturbanovtz.database.entities.user.User;
+import org.philipturbanovtz.common.PrincipalHelper;
 import org.philipturbanovtz.dtos.api.http.HttpResponseDto;
 import org.philipturbanovtz.dtos.api.measurement.rq.SaveMeasurementsRqDto;
 import org.philipturbanovtz.dtos.api.measurement.rs.MeasurementsRsDto;
+import org.philipturbanovtz.dtos.api.user.UserDto;
 import org.philipturbanovtz.exceptions.measurement.InvalidMeasurementDataException;
 import org.philipturbanovtz.exceptions.measurement.MeasurementNotFoundException;
 import org.philipturbanovtz.exceptions.measurement.SaveMeasurementException;
@@ -56,11 +58,16 @@ public class MeasurementController {
         @ApiResponse(
             responseCode = "103",
             description = "Current user hasn't saved measurements"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorised"
         )
     })
-    HttpResponseDto latestMeasurement() throws MeasurementNotFoundException {
+    HttpResponseDto latestMeasurement(Principal principal) throws MeasurementNotFoundException {
         logger.info("Get latest measurements!");
-        MeasurementsRsDto data = measurementsService.getLatestForUser(1);
+        UserDto user = PrincipalHelper.getUser(principal);
+        MeasurementsRsDto data = measurementsService.getLatestForUser(user.getId());
         return HttpHelper.generateResponseOK(data);
     }
 
@@ -75,16 +82,22 @@ public class MeasurementController {
         @ApiResponse(
             responseCode = "1",
             description = "Error. See details in message"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorised"
         )
     })
     HttpResponseDto measurementsHistory(
         @RequestParam(name = "page_number") Integer pageNumber,
         @RequestParam(name = "page_size") Integer pageSize,
         @Nullable @RequestParam(name = "date_from") Long dateFrom,
-        @Nullable @RequestParam(name = "date_to") Long dateTo
+        @Nullable @RequestParam(name = "date_to") Long dateTo,
+        Principal principal
     ) {
         logger.info("Get measurements history!");
-        Page<MeasurementsRsDto> data = measurementsService.getHistoryForUser(2, PageRequest.of(pageNumber, pageSize), dateFrom, dateTo);
+        UserDto user = PrincipalHelper.getUser(principal);
+        Page<MeasurementsRsDto> data = measurementsService.getHistoryForUser(user.getId(), PageRequest.of(pageNumber, pageSize), dateFrom, dateTo);
         return HttpHelper.generateResponseOK(data);
     }
 
@@ -94,13 +107,13 @@ public class MeasurementController {
         @ApiResponse(responseCode = "0", description = "OK"),
         @ApiResponse(responseCode = "1", description = "Error. See details in message"),
         @ApiResponse(responseCode = "101", description = "Invalid incoming data"),
-        @ApiResponse(responseCode = "102", description = "Error while saving measurements for user")
+        @ApiResponse(responseCode = "102", description = "Error while saving measurements for user"),
+        @ApiResponse(responseCode = "401", description = "Unauthorised")
     })
-    HttpResponseDto saveMeasurements(@Valid @RequestBody SaveMeasurementsRqDto data) throws SaveMeasurementException, InvalidMeasurementDataException {
+    HttpResponseDto saveMeasurements(@Valid @RequestBody SaveMeasurementsRqDto data, Principal principal) throws SaveMeasurementException, InvalidMeasurementDataException {
         logger.info("Save measurements!");
-        User user = new User("abc", "abc");
-        user.setId(1L);
-        measurementsService.saveForUser(user, data);
+        UserDto user = PrincipalHelper.getUser(principal);
+        measurementsService.saveForUser(user.getId(), data);
         return HttpHelper.generateResponseOK(null);
     }
 }

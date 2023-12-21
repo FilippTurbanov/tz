@@ -1,6 +1,5 @@
 package org.philipturbanovtz.modules.measurement;
 
-import org.philipturbanovtz.database.entities.user.User;
 import org.philipturbanovtz.dtos.api.measurement.rq.SaveMeasurementsRqDto;
 import org.philipturbanovtz.dtos.api.measurement.rs.MeasurementsRsDto;
 import org.philipturbanovtz.exceptions.measurement.InvalidMeasurementDataException;
@@ -14,5 +13,5 @@ public interface MeasurementsService {
 
     Page<MeasurementsRsDto> getHistoryForUser(long userId, Pageable pageable, Long dateFrom, Long dateTo);
 
-    void saveForUser(User user, SaveMeasurementsRqDto data) throws InvalidMeasurementDataException, SaveMeasurementException;
+    void saveForUser(long userId, SaveMeasurementsRqDto data) throws InvalidMeasurementDataException, SaveMeasurementException;
 }

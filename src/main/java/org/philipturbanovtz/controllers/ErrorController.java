@@ -6,6 +6,7 @@ import org.philipturbanovtz.common.HttpHelper;
 import org.philipturbanovtz.dtos.api.http.HttpResponseDto;
 import org.philipturbanovtz.enums.ResponseStatusCodeEnum;
 import org.philipturbanovtz.exceptions.ApiException;
+import org.philipturbanovtz.exceptions.auth.AuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,12 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ErrorController {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<HttpResponseDto> handleApiExceptions(ApiException e) {
-        HttpResponseDto response = HttpHelper.generateResponseErr(
-            e.getCode(),
-            e.getMessage(),
-            null
-        );
-        return buildResponse(response, HttpStatus.OK);
+        return buildResponse(buildHttpResponse(e), HttpStatus.OK);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -41,6 +37,19 @@ public class ErrorController {
             null
         );
         return buildResponse(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<HttpResponseDto> handleAuthExceptions(AuthException e) {
+        return buildResponse(buildHttpResponse(e), HttpStatus.UNAUTHORIZED);
+    }
+
+    private HttpResponseDto buildHttpResponse(ApiException e) {
+        return HttpHelper.generateResponseErr(
+            e.getCode(),
+            e.getMessage(),
+            null
+        );
     }
 
     private ResponseEntity<HttpResponseDto> buildResponse(HttpResponseDto response, HttpStatus status) {

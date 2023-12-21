@@ -13,9 +13,17 @@ spring:
     change-log: classpath:liquibase/db.changelog/db.changelog-master.yaml
     drop-first: false
     default-schema: public
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 server:
   port: 8080
+
+application:
+  security:
+    jwt:
+      secret-key: NMbPNHXaqp24UT9Qitx5udWyFY4jcbJfa6X4wcQevWhKkYAKEkCDpRRK
 
 springdoc:
   swagger-ui:
